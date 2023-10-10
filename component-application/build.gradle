@@ -1,0 +1,38 @@
+plugins {
+    id 'cpp-application'
+    id 'maven-publish'
+}
+
+group =  'com.xilinx.samples'
+version = "6.5.4"
+
+project.ext.localRepoPath = "${project.layout.projectDir}/../local-repo"
+
+components.withType(ProductionCppComponent) {
+    source.from rootProject.file("./app/src/main/cpp")
+    privateHeaders.from rootProject.file("./app/src/main/headers")
+}
+
+components.withType(CppLibrary) {
+    publicHeaders.from rootProject.file("./app/src/main/public")
+}
+
+dependencies {
+    implementation "com.xilinx.samples:component-consumer-library:6.5.4"
+    implementation "com.xilinx.samples:component-producer-library:3.2.1"
+}
+
+repositories {
+    maven {
+        url "file://${project.localRepoPath}"
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name "local"
+            url "file://${project.localRepoPath}"
+        }
+    }
+}

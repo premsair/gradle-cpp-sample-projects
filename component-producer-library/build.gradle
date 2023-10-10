@@ -1,0 +1,47 @@
+plugins {
+    id 'maven-publish'
+    id 'cpp-library'
+    id 'cpp-unit-test'
+}
+
+group = 'com.xilinx.samples'
+version = "3.2.1"
+
+project.ext.localRepoPath = "${project.layout.projectDir}/../local-repo"
+
+unitTest {
+    source.from file('./list/src/test/cpp')
+    privateHeaders.from file('./list/src/test/cpp')
+    //publicHeaders.from file('include')
+}
+
+components.withType(ProductionCppComponent) {
+    source.from rootProject.file("./list/src/main/cpp")
+    privateHeaders.from rootProject.file("./list/src/main/include")
+}
+
+components.withType(CppLibrary) {
+    publicHeaders.from rootProject.file("./list/src/main/public")
+}
+
+library {
+    // NOTE: From top-level project, only linking is done and no publishing for static lib, if shared then we publish
+    //linkage = [Linkage.STATIC, Linkage.SHARED] // i.e. this task will exist: :core_list:linkReleaseShared
+    linkage = [Linkage.SHARED]                   // i.e. this task will exist: :core_list:publishMainReleasePublicationToLibsRepository
+    targetMachines = [machines.linux.x86_64, machines.windows.x86_64]
+}
+
+repositories {
+    maven {
+        url "file://${project.localRepoPath}"
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name "local"
+            url "file://${project.localRepoPath}"
+        }
+    }
+}

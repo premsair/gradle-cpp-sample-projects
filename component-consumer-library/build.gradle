@@ -1,0 +1,41 @@
+plugins {
+    id 'cpp-library'
+    id 'maven-publish'
+}
+
+group =  'com.xilinx.samples'
+version = "6.5.4"
+
+project.ext.localRepoPath = "${project.layout.projectDir}/../local-repo"
+
+components.withType(ProductionCppComponent) {
+    source.from rootProject.file("./utilities/src/main/cpp")
+    privateHeaders.from rootProject.file("./utilities/src/main/include")
+}
+
+components.withType(CppLibrary) {
+    publicHeaders.from rootProject.file("./utilities/src/main/public")
+}
+
+library {
+    linkage = [Linkage.SHARED]
+    targetMachines = [machines.linux.x86_64, machines.windows.x86_64]
+    dependencies {
+        api "com.xilinx.samples:component-producer-library:3.2.1"
+    }
+}
+
+repositories {
+    maven {
+        url "file://${project.localRepoPath}"
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name "local"
+            url "file://${project.localRepoPath}"
+        }
+    }
+}

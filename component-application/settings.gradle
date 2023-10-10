@@ -1,0 +1,8 @@
+pluginManagement {
+    // To resolve plugin dependencies...
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'component-application'
